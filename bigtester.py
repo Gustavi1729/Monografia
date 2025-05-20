@@ -4,9 +4,8 @@ from multiprocessing import Process, Queue
 import threading
 
 def worker(k, it,mut1, mut2, flip1, flip2, q):
-    print("DOIS PONTOS PARENTESES")
     S2 = NSGAII(k,it, mut2, flip2, plotar=False, indepth=False)
-    S1 = iteradorTest(k,it, mut1, flip1, plotar=False, indepth=False)
+    S1 = WDH(k,it, mut1, flip1, plotar=False, indepth=False)
 
     pack = hypervolume(S1,S2)
 
@@ -21,9 +20,8 @@ def worker(k, it,mut1, mut2, flip1, flip2, q):
 
     q.put([S1hv, S2hv, S1min, S2min, S1med, S2med])
 
-def TheBigTester2(algos,k,it, mut1, mut2, flip1, flip2):
+def Comparador(algos,k,it, mut1, mut2, flip1, flip2):
 
-    print("Nova Versão 3.3.1")
     processos = []
     final = []
 
@@ -41,53 +39,14 @@ def TheBigTester2(algos,k,it, mut1, mut2, flip1, flip2):
     while not q.empty():
         final.append(q.get())
 
+    labels = ["HiperVolume WDH: ", "HiperVolume NSGA-II: ", "d_min WDH: ", "d_min NSGA-II: ", "d_med WDH: ", "d_med NSGA-II: "]
+
     finalNP = np.array(final)
     for c in range(6):
-        print(np.mean(finalNP[:,c]))
+        print(labels[c], np.mean(finalNP[:,c]))
 
     return finalNP
 
-
-
-
-def TheBigTester(algos,k,it):
-
-    print("Nova Versão 2.3")
-    meuItHV = []
-    nsgaHV = []
-    meuItUNI = []
-    nsgaUNI = []
-    meuItUNIMean = []
-    nsgaUNIMean = []
-    DadosBrutos1 = []
-    DadosBrutos2 = []
-    for i in range(algos):
-        if i % 5 == 0:
-            print(f'{i}/{algos} CICLOS COMPLETOS')
-        S1 = iterador(k,it, plotar=False, indepth=False)
-        S2 = iteradorTest(k,it, plotar=False, indepth=False)
-
-        pack = hypervolume(S1,S2)
-        meuItHV.append(pack[0])
-        nsgaHV.append(pack[1])
-
-        arrayUniformidade1 = c_distHam(S1)
-        meuItUNI.append(np.min(arrayUniformidade1[arrayUniformidade1 > 0]))
-        meuItUNIMean.append((np.mean(arrayUniformidade1[arrayUniformidade1 > 0])))
-        arrayUniformidade2 = c_distHam(S2)
-        nsgaUNI.append(np.min(arrayUniformidade2[arrayUniformidade2 > 0]))
-        nsgaUNIMean.append((np.mean(arrayUniformidade2[arrayUniformidade2 > 0])))
-        DadosBrutos1.append(S1)
-        DadosBrutos2.append(S2)
-
-
-    print(np.mean(meuItHV))
-    print(np.mean(nsgaHV))
-    print(np.mean(meuItUNI))
-    print(np.mean(nsgaUNI))
-    print(np.mean(meuItUNIMean))
-    print(np.mean(nsgaUNIMean))
-    return DadosBrutos1, DadosBrutos2
 
 
 def hypervolume(S1, S2):

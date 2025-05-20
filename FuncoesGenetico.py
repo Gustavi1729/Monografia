@@ -320,54 +320,7 @@ def mutate_2d_array(array, mutation_rate=0.01, prob_1 = 0.1): #Mutação com pro
     return array
 
 
-def iterador(k, it, plotar=True, indepth=True):
-    popInit = geraPopInit(k)
-    colorwheel = [] #Paleta de cores para o plot
-    for c in range(it):
-        colorwheel.append((0, 0.6, 1 - c/it))
-
-    for i in range(it):
-        if (i % 50 == 0 and indepth==True):
-            print(f'{i}/{it}')
-        popNova = []
-        finals = calculaMedidasNSGA(popInit)
-        vencedores = binary_tournament_selectionNSGA(k, finals)
-        while len(popNova) < k:
-             
-             pai, mae = random.sample(vencedores,2 )
-             cross1 = multi_point_column_crossover(pai.vetorAlimentos, mae.vetorAlimentos)
-             cross2 = multi_point_column_crossover(mae.vetorAlimentos, pai.vetorAlimentos)
-             filho1 = Instancia(mutate_2d_array(cross1,prob_1 =1/it))
-             filho2 = Instancia(mutate_2d_array(cross2, prob_1 = 1/it))
-             '''
-             filho1.SomaDias()
-             filho2.SomaDias()
-
-             if filho1.CheckRestr()[0] == 1:
-                filho1 = Reparo(filho1)
-             if filho2.CheckRestr()[0] == 1:
-                filho2 = Reparo(filho2)
-             '''   
-             popNova.append(filho1)
-             popNova.append(filho2)
-             
-        popInit = list(popNova) + list(popInit)
-        popInit = maxMin(popInit, k)
-        if plotar == True:
-            plotMaxMin(popInit, cor=colorwheel[i-1])
-        if (i % (it/10) == 0):
-               for ind in popInit:
-                   ind.SomaDias()
-                   if ind.CheckRestr()[0] == 1:
-                       ind = Reparo2(ind)
-
-    for ind in popInit:
-                   ind.SomaDias()
-                   if ind.CheckRestr()[0] == 1:
-                       ind = Reparo2(ind)
-    return popInit
-
-def iteradorTest(k, it, mut = 0.05, flip = 1/30,  plotar=True, indepth=True):
+def WDH(k, it, mut = 0.05, flip = 1/30,  plotar=True, indepth=True):
     popInit = geraPopInit(k)
     colorwheel = [] #Paleta de cores para o plot
     for c in range(it):
@@ -423,7 +376,6 @@ def iteradorTest(k, it, mut = 0.05, flip = 1/30,  plotar=True, indepth=True):
 
 def NSGAII(k, it, mut = 0.05, flip = 1/30, plotar=True, indepth=True):
 
-    print(":x")
     popInit = geraPopInit(k)
     colorwheel = [] #Paleta de cores para o plot
     for c in range(it):
