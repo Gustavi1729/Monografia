@@ -104,6 +104,8 @@ class Instancia:
           quants.append(VDR[info] - total[dia,info])
     self.Penalidade = np.sum(quants)
 
+
+
 '''
   def CheckRestr(self, imprimir=0):
     erros = []

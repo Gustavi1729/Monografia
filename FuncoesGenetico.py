@@ -444,6 +444,12 @@ def NSGAII(k, it, mut = 0.05, flip = 1/30, plotar=True, indepth=True):
 
 '''  FUNÇÕES MULTIOBJETIVO'''
 
+
+def pontosDecisao(resultAbordagem):
+    return np.array([i.vetorAlimentos for i in resultAbordagem])
+
+
+
 def hypervolume(S1, S2):
     volume1 = calculaObjPop(S1)
     volume2 = calculaObjPop(S2)
