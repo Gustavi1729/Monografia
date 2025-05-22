@@ -85,6 +85,7 @@ def Reparo(instancia):
     instancia.SomaDias()
     return instancia
 
+'''
 def Reparo2(instancia):
     
     resposta = instancia.CheckRestr(imprimir=0)
@@ -98,9 +99,18 @@ def Reparo2(instancia):
         instancia.vetorAlimentos[melhorAlimento, nut[1]] += np.ceil(resposta[2][quant]/InfoVetorInstancia[melhorAlimento, nut[0]]) # Calcula quantos disso adicionar baseado no que falta
     instancia.SomaDias()
     return instancia
+'''
 
+def geraPopInit(n):
+    '''
+    Gera a população inicial do algoritmo
 
-def geraPopInit(n,teste = 0):
+    Args:
+        n: Tamanho da população
+    Returns:
+        Array de tamanho n com n objetos do tipo instância
+
+    '''
     PopInit = []
     for i in range(n):
         #instPop = Instancia(np.array([[random.choices(values, weights=weights, k=1)[0] for _ in range(7)] for _ in range(580)]))
@@ -143,7 +153,7 @@ def calc_crowding_distance(F, **kwargs):
 
     return cd
 
-
+'''
 def calculaProfundidades(x):
   profList = []
   iterador = 0
@@ -156,19 +166,25 @@ def calculaProfundidades(x):
 
     profList.extend([[element,iterador] for element in fronteira])
   return np.array(profList)
-
+'''
 def calculaMedidasNSGA(CrowdPop):
+    '''
+    Calcula as medidas utilizadas no algoritmo NSGA-II para escolha da população
 
-    for alimento in CrowdPop:
+    Args:
+        CrowdPop: A população ao qual o algoritmo será computado
+    Returns:
+        Retorna um array do tamanho da população e tres colunas, a primeira com a instância, a segunda com o rank dela, e a terceira com o crowding distance
+    '''
+
+    for alimento in CrowdPop: #A factibilidade da instancia é calculada aqui e armazenada no proprio objeto. Ela é utilizada na escolha do torneio binário
         alimento.calculaFact()
 
-    CrowdObj = calculaObjPop(CrowdPop)
-    rank = fast_non_dominated_sort(CrowdPop,CrowdObj)
+    CrowdObj = calculaObjPop(CrowdPop) #Calcula as funções objetivos da população
+    rank = fast_non_dominated_sort(CrowdPop,CrowdObj) #Faz i
     rank[:,1] += 1
     tuple_array = np.array([(pop, rank, obj) for pop, rank, obj in zip(CrowdPop, rank[:,1], CrowdObj)], dtype=object)
-    #print((tuple_array[:,1:]))
-    #print(tuple_array[:,1])
-    #tuple_array[tuple_array[:,0][1] == i+1][:,1]
+
     CrowdArray = []
     for i in range(max(rank[:,1])):
         x = calc_crowding_distance(np.vstack((tuple_array[tuple_array[:,1] == i+1][:,2])))
@@ -194,38 +210,21 @@ def escolhedor(ind1, ind2):
         return ind1 if ind1[1] < ind2[1] else ind2
     return ind1 if ind1[2] > ind2[2] else ind2
 
-
-# IMPLEMENTAÇÃO EQUIVOCADA USAR COMO ABAIXO
-def NDStopK(k, pop):
-    finalsNDS = count_dominations_fast(calculaObjPop(pop))
-    resultado = np.vstack((pop, finalsNDS)).T
-    sorted_indices = np.argsort(resultado[:,1])[::-1]
-    top = resultado[sorted_indices[:k]]
-    return top[:,0]
-
 def NSGAtop(pop, k):
-    sorted_arr = pop[np.lexsort((-pop[:, 2], pop[:, 1]))][:k,:]
+    '''Escolhe as k melhores instâncias baseado nas métricas do NSGAII 
+    
+    Args:
+        pop: População de indivíduos
+        k: Quantidade de indivíduos selecionados
+    
+    Returns:
+        Array de tamanho k que corresponde a população de indivíduos selecionados
+    '''
+    sorted_arr = pop[np.lexsort((-pop[:, 2], pop[:, 1]))][:k,:] #Ordena por rank de menor a maior, e se igual por crowding distance, do maior ao menor. Escolhemos então os k primeiros
     return sorted_arr
 
 
 
-# Recebe um array de instancias, fitness (calculado na dominancia)  [[inst, fit],[inst,fit]
-def binary_tournament_selection(k, pop):
-    selected_individuals = []
-
-    for _ in range(k):
-        # Randomly select two individuals
-        individual1, individual2 = random.sample(range(k), 2)
-        
-        # Compare their fitness values
-        if pop[individual1][1] > pop[individual2][1]:
-            winner = pop[individual1][0]
-        else:
-            winner = pop[individual2][0]
-        
-        # Add the winner to the selected individuals
-        selected_individuals.append(winner) #Retorna array de individuos
-    return selected_individuals
 
 def binary_tournament_selectionNSGA(k, pop):
     selected_individuals = []
