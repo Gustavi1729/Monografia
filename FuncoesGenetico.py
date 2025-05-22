@@ -593,3 +593,10 @@ def count_dominations_fast(points):
     return domination_counts
 
 
+def pontosFronteiraPareto(pop):
+    mask = is_pareto_efficient(calculaObjPop(pop))
+    fronteiraParetoDecisao = pontosDecisao(pop[mask])
+    fronteiraParetoObj = calculaObjPop(pop[mask])
+
+    return fronteiraParetoDecisao, fronteiraParetoObj
+        
